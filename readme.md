@@ -1,5 +1,5 @@
 # CDFixCode
-This repository contains the code for **CDFixCode: Context-aware Dual Learning for Automated Program Repair** and the ~~[Page](https://automatedprogramrepair-2021.github.io/DEAR-Public/) that has some visualizd data.~~
+This repository contains the code for **CDFixCode: Context-aware Dual Learning for Automated Program Repair**.
 
 ## Introduction
 
@@ -29,28 +29,16 @@ the total fixed bugs that were missed by the best DL-based baseline.
 ----------
 
 ## Contents
-1. [Dataset](#Dataset)
-2. [Requirement](#Requirement)
-3. [Editable Parameters](#Editable-Parameters)
-4. [Instruction](#Instruction)
-5. [Reference](#Reference)
+1. [Requirement](#Requirement)
+2. [Instruction](#Instruction)
 
-## Dataset
-
-# Intended to left blank for now.
 
 ## Requirement
 
-Please check all required packages in the ~~[requirement.txt]~~ (https://github.com/daleyli/fixlocatorcode/requirement.txt) 
-
-## Editable Parameters
-
-# Intended to left blank for now.
+Please check all required packages in the [requirement.txt] (https://github.com/daleyli/fixlocatorcode/requirement.txt) 
 
 ## Instruction
 
 Run ```main.py``` to see the result for our experiment. 
 
-# Reference
 
-# Intended to left blank for now.
