@@ -35,7 +35,7 @@ the total fixed bugs that were missed by the best DL-based baseline.
 
 ## Requirement
 
-Please check all required packages in the [requirement.txt] (https://github.com/daleyli/fixlocatorcode/requirement.txt) 
+Please check all required packages in the [requirement.txt] (https://github.com/cdfixresearch/cdfixresearch/blob/main/requirement.txt) 
 
 ## Instruction
 
