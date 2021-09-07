@@ -39,6 +39,7 @@ Please check all required packages in the [requirement.txt](https://github.com/c
 
 ## Instruction
 
+For demo and testing purposes with our preprocessed data, 
 Run ```main.py``` to see the result for our experiment. 
 
 
