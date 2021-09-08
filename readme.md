@@ -1,5 +1,14 @@
 # CDFixCode
+
 This repository contains the code for **CDFixCode: Context-aware Dual Learning for Automated Program Repair** and the [Page](https://cdfixresearch.github.io/CDFixPage/) that has visualized data from table 1 to table 4.
+
+## Contents
+
+1. [Introduction](#Introduction)
+2. [Dataset](#Dataset)
+3. [Requirement](#Requirement)
+4. [Instruction](#Instruction)
+5. [Demo](#Demo)
 
 ## Introduction
 
@@ -26,12 +35,33 @@ with only the top-1 patches in Defects4J, Bugs.jar, and BigFix, respectively. In
 16.7%–194.7%. In Bugs.jar and BigFix, it fixes 26.4% and 27.7% of
 the total fixed bugs that were missed by the best DL-based baseline.
 
-----------
+## Dataset
 
-## Contents
-1. [Requirement](#Requirement)
-2. [Instruction](#Instruction)
+### Preprocessed Dataset
 
+We published our processed dataset at https://drive.google.com/file/d/1Vvw6r3kZQpeIniy71HqwlR6qia5whSxE/view?usp=sharing
+
+Please download the dataset, unzip it and put all files in ```./processed``` folder.
+
+### Use your own dataset
+
+If you want to use your own dataset, please prepare the data as follow:
+
+1. There are two data files including ```data_1.pt``` and ```dic.npy```
+
+2. ```data_1.pt``` includes a list of fixing pairs and each pair stored in one list. Each pair contains four ```Tree``` object structure mentioned in ```main.py``` and four relevant value dictionary for each ```Tree``` object. The id in the dictionary matches the id in the ```Tree``` object. These four ```Tree``` object represent the following information:
+
+	1> ```Tree_m```: AST for the buggy method
+	
+	2> ```Tree_mf```: AST for the fixed version of method
+	
+	3> ```Tree_s```: Subtree of AST for the buggy statement
+	
+	4> ```Tree_sf```: Subtree of AST for the fixed version statement
+	
+	```data_1.pt``` stores these trees with dictionaries as ```[Tree_m, Tree_mf, Tree_s, Tree_sf, dic_m, dic_mf, dic_s, dic_sf]```
+
+3. ```dic.npy``` includes a numpy array and each line inside is a word embedding vector with lenght of 128 (changable). The index of the token is just the index of the numpy array. To transform to the readable results, please also prepare the dictionary reflecting the index with the real word tokens. In our experiments, we directly use index to check the accruacy without transform to real tokens.
 
 ## Requirement
 
@@ -39,7 +69,10 @@ Please check all required packages in the [requirement.txt](https://github.com/c
 
 ## Instruction
 
-For demo and testing purposes with our preprocessed data, 
 Run ```main.py``` to see the result for our experiment. 
 
+## Demo
 
+For the testing purpose of running, please download our demo that contains the model for fixing one bug. Demo download: https://drive.google.com/file/d/1TNi96fFiebA7tkziscI8lF8j-jXTkVye/view?usp=sharing
+
+Put ```model.pt``` and ```processed``` in the same folder as FixLocator and then run ```run_demo.py``` to see the results.

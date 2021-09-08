@@ -62,7 +62,7 @@ class Encoder(Module):
     def forward(self, input, hidden):
         embedded = input.view(1, 1, -1)
         output = embedded
-        output, hidden = self.gru(output, hidden)
+        output, hidden = self.gru(output.float(), hidden.float())
         return output, hidden
 
     def initHidden(self):
@@ -87,12 +87,12 @@ class AttnDecoder_(Module):
     def forward(self, input, hidden, encoder_outputs):
         embedded = input.view(1, 1, -1)
         attn_weights = F.softmax(
-            self.attn(torch.cat((embedded[0], hidden[0]), 1)), dim=1)
+            self.attn(torch.cat((embedded[0].float(), hidden[0].float()), 1)), dim=1)
         attn_applied = torch.bmm(attn_weights.unsqueeze(0),
                                  encoder_outputs.unsqueeze(0))
 
         output = torch.cat((embedded[0], attn_applied[0]), 1)
-        output = self.attn_combine(output).unsqueeze(0)
+        output = self.attn_combine(output.float()).unsqueeze(0)
 
         output = F.relu(output)
         output, hidden = self.gru(output, hidden)

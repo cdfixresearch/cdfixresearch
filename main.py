@@ -1,12 +1,11 @@
 import random
 import torch
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from torch import nn
-from tqdm import tqdm
 import model
 import os.path as osp
 import time
 import math
+import numpy as np
 import os
 
 device = torch.device("cpu")
@@ -51,7 +50,7 @@ class Tree(object):
         return self._depth
 
 
-def start_training(dataset):
+def start_training(dataset, dic):
     #  random.shuffle(dataset)
     train_dataset = []
     test_dataset = []
@@ -61,8 +60,33 @@ def start_training(dataset):
         else:
             test_dataset.append(dataset[i])
     encoder = model.Encoder(128, 128)
-    decoder = model.AttnDecoder_(128, 128)
-    trainIters(train_dataset, encoder, decoder, 40, 30)
+    decoder = model.AttnDecoder_(128, len(dic))
+    trainIters(train_dataset, test_dataset, encoder, decoder, len(train_dataset), 5, dic)
+
+
+def demo_work(dataset, dic):
+    #  random.shuffle(dataset)
+    train_dataset = []
+    test_dataset = dataset
+    encoder = model.Encoder(128, 128)
+    encoder.load_state_dict(torch.load("encoder.pt"))
+    encoder.eval()
+    decoder = model.AttnDecoder_(128, len(dic))
+    decoder.load_state_dict(torch.load("decoder.pt"))
+    decoder.eval()
+    demo_test(test_dataset, encoder, decoder, dic)
+
+
+def demo_test(testing_dataset, encoder, decoder, dic):
+    total = 0
+    for iter in range(1, len(testing_dataset) + 1):
+        training_pair = testing_dataset[iter - 1]
+        input_tensor = training_pair[0]
+        target_tensor = training_pair[1]
+        output, check = evaluate(encoder, decoder, input_tensor, target_tensor, dic)
+        total = total + check
+        print(target_tensor)
+    print("Predict Accuracy:", total / len(testing_dataset))
 
 
 def asMinutes(s):
@@ -79,25 +103,57 @@ def timeSince(since, percent):
     return '%s (- %s)' % (asMinutes(s), asMinutes(rs))
 
 
-def evaluate_():
-    print("Top-1 Accuracy: ", random.uniform(3, 15)/100)
+def evaluate(encoder, decoder, sentence, label, dic, max_length=MAX_LENGTH):
+    with torch.no_grad():
+        input_length = sentence.size()[0]
+        encoder_hidden = encoder.initHidden()
+
+        encoder_outputs = torch.zeros(max_length, encoder.hidden_size, device=device)
+
+        for ei in range(input_length):
+            encoder_output, encoder_hidden = encoder(sentence[ei],
+                                                     encoder_hidden)
+            encoder_outputs[ei] += encoder_output[0, 0]
+
+        decoder_input = torch.zeros((1, 128))
+
+        decoder_hidden = encoder_hidden
+
+        decoded_words = []
+        decoder_attentions = torch.zeros(max_length, max_length)
+
+        for di in range(max_length):
+            decoder_output, decoder_hidden, decoder_attention = decoder(
+                decoder_input, decoder_hidden, encoder_outputs)
+            decoder_attentions[di] = decoder_attention.data
+            topv, topi = decoder_output.data.topk(1)
+            decoded_words.append(topi.item())
+            if topi.item() == 0:
+                decoder_input = torch.tensor(dic[1].reshape(1, -1))
+            else:
+                decoder_input = torch.tensor(dic[topi.item()].reshape(1, -1))
+        check = 0
+        for i in range(len(label)-1):
+            if label[i] == decoded_words[i + 1]:
+                check = 1
+        return decoded_words, check
 
 
-def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, criterion, max_length=MAX_LENGTH):
+def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, criterion, dic, max_length=MAX_LENGTH):
     encoder_hidden = encoder.initHidden()
 
     encoder_optimizer.zero_grad()
     decoder_optimizer.zero_grad()
 
     input_length = input_tensor.size(0)
-    target_length = target_tensor.size(0)
+    target_length = len(target_tensor)
 
     encoder_outputs = torch.zeros(max_length, encoder.hidden_size, device=device)
     loss = 0
 
     for ei in range(input_length):
         encoder_output, encoder_hidden = encoder(
-            input_tensor[ei], encoder_hidden)
+            input_tensor[ei].double(), encoder_hidden.double())
         encoder_outputs[ei] = encoder_output[0, 0]
 
     decoder_input = torch.zeros((1, 128))
@@ -105,27 +161,28 @@ def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, deco
     decoder_hidden = encoder_hidden
 
     use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
-    dic = {}
-    for i in range(500):
-        v = []
-        for j in range(128):
-            vec = random.uniform(-3, 3)
-            v.append(vec)
-        v = torch.tensor(v)
-        dic[i] = v
+    dic_ = {}
+    for i in range(len(dic)):
+        dic_[i + 1] = torch.tensor(dic[i])
     if use_teacher_forcing:
         for di in range(target_length):
             decoder_output, decoder_hidden, decoder_attention = decoder(
                 decoder_input, decoder_hidden, encoder_outputs)
             loss += criterion(decoder_output, torch.tensor([target_tensor[di]]))
-            decoder_input = dic[target_tensor[di].item()]
+            if target_tensor[di].item() == 0:
+                decoder_input = torch.zeros((1, 128))
+            else:
+                decoder_input = dic_[target_tensor[di].item()].clone().detach().reshape(1, -1)
 
     else:
         for di in range(target_length):
             decoder_output, decoder_hidden, decoder_attention = decoder(
                 decoder_input, decoder_hidden, encoder_outputs)
             topv, topi = decoder_output.topk(1)
-            decoder_input = dic[topi.squeeze().detach().item()]
+            if topi.squeeze().detach().item() == 0:
+                decoder_input = torch.zeros((1, 128))
+            else:
+                decoder_input = torch.tensor(dic[topi.squeeze().detach().item()].reshape(1, -1))
             loss += criterion(decoder_output, torch.tensor([target_tensor[di]]))
 
     loss.backward()
@@ -136,7 +193,7 @@ def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, deco
     return loss.item() / target_length
 
 
-def trainIters(training_data, encoder, decoder, n_iters, epoch, print_every=10, learning_rate=0.001):
+def trainIters(training_data, testing_dataset, encoder, decoder, n_iters, epoch, dic, print_every=10, learning_rate=0.001):
     start = time.time()
     print_loss_total = 0
 
@@ -153,7 +210,7 @@ def trainIters(training_data, encoder, decoder, n_iters, epoch, print_every=10, 
             target_tensor = training_pair[1]
 
             loss = train(input_tensor, target_tensor, encoder,
-                         decoder, encoder_optimizer, decoder_optimizer, criterion)
+                         decoder, encoder_optimizer, decoder_optimizer, criterion, dic)
             print_loss_total += loss
 
             if iter % print_every == 0:
@@ -161,9 +218,21 @@ def trainIters(training_data, encoder, decoder, n_iters, epoch, print_every=10, 
                 print_loss_total = 0
                 print('%s (%d %d%%) loss: %.4f' % (timeSince(start, iter / n_iters),
                                                    iter, iter / n_iters * 100, print_loss_avg))
-    evaluate_()
+    torch.save(encoder.state_dict(), "encoder.pt")
+    torch.save(decoder.state_dict(), "decoder.pt")
+    encoder.eval()
+    decoder.eval()
+    total = 0
+    for iter in range(1, len(testing_dataset) + 1):
+        training_pair = testing_dataset[iter - 1]
+        input_tensor = training_pair[0]
+        target_tensor = training_pair[1]
+        output, check = evaluate(encoder, decoder, input_tensor, target_tensor, dic)
+        total = total + check
+    print(total/len(testing_dataset))
 
 
 if __name__ == '__main__':
-    data = torch.load(osp.join("D:\\research\\auto_fix\\cdfxicode\\processed\\", 'data_1.pt'))
-    start_training(data)
+    data = torch.load(osp.join(os.getcwd(), '/processed/data_1.pt'))
+    dic = np.load(osp.join(os.getcwd(), '/processed/dic.npy'))
+    start_training(data, dic)
