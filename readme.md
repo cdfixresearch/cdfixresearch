@@ -46,7 +46,7 @@ the total fixed bugs that were missed by the best DL-based baseline.
 
 We published our processed dataset at https://drive.google.com/file/d/1Vvw6r3kZQpeIniy71HqwlR6qia5whSxE/view?usp=sharing
 
-Please download the dataset, unzip it and put all files in ```./processed``` folder.
+Please create a ```processed``` folder under the root folder of CDFix, download the dataset, unzip it and put all files in ```./processed``` folder.
 
 ### Use your own dataset
 
