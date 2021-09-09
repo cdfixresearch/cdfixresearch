@@ -80,4 +80,4 @@ Run ```main.py``` to see the result for our experiment.
 
 For the testing purpose of running, please download our demo that contains the model for fixing one bug. Demo download: https://drive.google.com/file/d/1TNi96fFiebA7tkziscI8lF8j-jXTkVye/view?usp=sharing
 
-Put ```model.pt``` and ```processed``` in the same folder as CDFix and then run ```demo_work.py``` to see the results.
+Put ```model.pt``` and ```processed``` in the root folder of CDFix and then run ```demo_work.py``` to see the results.
