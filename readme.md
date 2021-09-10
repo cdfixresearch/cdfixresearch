@@ -78,7 +78,7 @@ Please check all required packages in the [requirement.txt](https://github.com/c
 
 ## Instruction_to_Run_CDFix
 
-Run ```main.py``` to see the result for our experiment. 
+Download the CDFix source code from github and run ```main.py``` to see the result for our experiment. 
 
 ## Demo
 
