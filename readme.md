@@ -82,6 +82,6 @@ Download the CDFix source code from github and run ```main.py``` to see the resu
 
 ## Demo
 
-For the testing purpose of running, please download our demo that contains the model for fixing one bug. Demo download: https://drive.google.com/file/d/11HHtb08bsxsCLBEKL56BICnxNrpAzvEJ/view?usp=sharing
+For the testing purpose of running, please download our demo that contains the model for fixing one bug. Demo download: https://drive.google.com/file/d/1E8E_P-UwSdAOSxyhBqQAV2AhAO44K5Xu/view?usp=sharing
 
 Put ```model.pt``` and ```processed``` in the root folder of CDFix and then run ```demo_work.py``` to see the results.
