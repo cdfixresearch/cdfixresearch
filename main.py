@@ -255,6 +255,6 @@ def trainIters(training_data, testing_dataset, encoder, decoder, n_iters, epoch,
 
 
 if __name__ == '__main__':
-    data = torch.load(osp.join(os.getcwd(), '/processed/data_1.pt'))
-    dic = np.load(osp.join(os.getcwd(), '/processed/dic.npy'))
+    data = torch.load(osp.join(os.getcwd(), 'processed/data_1.pt'))
+    dic = np.load(osp.join(os.getcwd(), 'processed/dic.npy'))
     start_training(data, dic)
