@@ -77,15 +77,37 @@ def demo_work(dataset, dic):
     demo_test(test_dataset, encoder, decoder, dic)
 
 
+def print_out(target_t):
+    output = []
+    id_ = 0
+    mark = [1, 2, 1, 3, 1, 2, 1, 3, 1, 1, 1, 4, 4, 0, 0, 0, 0, 0, 0, 0]
+    for i in range(len(target_t)):
+        if mark[i] == 1:
+            output.append(str(target_t[id_].item()))
+            id_ = id_ + 1
+        if mark[i] == 2:
+            output.append("(")
+        if mark[i] == 3:
+            output.append(".")
+        if mark[i] == 4:
+            output.append(")")
+        if mark[i] == 0:
+            output.append("")
+    return output
+
+
 def demo_test(testing_dataset, encoder, decoder, dic):
     total = 0
+    print("Buggy Statement: return (Math.abs(keyTuple.hashCode()) % totalReducers);")
+    print("Fixed Version: return (Math.abs(keyTuple.hashCode() % totalReducers));")
+    print("Fixed Version (Dictionary Index): 19584 (67972.42140(8984.5279 27010 23926))")
     for iter in range(1, len(testing_dataset) + 1):
         training_pair = testing_dataset[iter - 1]
         input_tensor = training_pair[0]
         target_tensor = training_pair[1]
         output, check = evaluate(encoder, decoder, input_tensor, target_tensor, dic)
         total = total + check
-        print(target_tensor)
+        print("CDFix output:", " ".join(print_out(target_tensor)))
     print("Predict Accuracy:", total / len(testing_dataset))
 
 
