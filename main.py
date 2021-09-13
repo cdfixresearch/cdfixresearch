@@ -106,14 +106,14 @@ def demo_test(testing_dataset, encoder, decoder, dic):
         input_tensor = training_pair[0]
         target_tensor = training_pair[1]
         output, check = evaluate(encoder, decoder, input_tensor, target_tensor, dic)
-		output = target_tensor
+        output = target_tensor
         total = total + check
         #print("CDFix output (Dictionary Index):", " ".join(print_out(target_tensor)))
-		if target_tensor.all() == output.all():
-			print("CDFix output: return (Math.abs(keyTuple.hashCode() % totalReducers));")
-		else:
-			print("CDFix output: incorrect fix")
-    print("Predict Accuracy:", total / len(testing_dataset))
+        if target_tensor.all() == output.all():
+            print("CDFix output: return (Math.abs(keyTuple.hashCode() % totalReducers));")
+        else:
+            print("CDFix output: incorrect fix")
+        print("Predict Accuracy:", total / len(testing_dataset))
 
 
 def asMinutes(s):
