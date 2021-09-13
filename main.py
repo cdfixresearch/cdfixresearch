@@ -113,7 +113,7 @@ def demo_test(testing_dataset, encoder, decoder, dic):
             print("CDFix output: return (Math.abs(keyTuple.hashCode() % totalReducers));")
         else:
             print("CDFix output: incorrect fix")
-        print("Predict Accuracy:", total / len(testing_dataset))
+    print("Predict Accuracy:", total / len(testing_dataset))
 
 
 def asMinutes(s):
