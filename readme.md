@@ -84,7 +84,7 @@ Download the CDFix source code from github and run ```main.py``` to see the resu
 
 For the testing purpose of running, please download our demo that contains the model for fixing one bug. Demo download: https://drive.google.com/file/d/1lE-Wqmbyd8eT2S0TOQt1TdUv3yb_KYY4/view?usp=sharing
 
-Put ```model.pt``` and ```processed``` in the root folder of CDFix 
+Put ```encoder.pt```, ```decoder.pt``` and ```processed``` in the root folder of CDFix 
 
 Change the path in ```demo_work.py``` if you are running on Linux system
 
