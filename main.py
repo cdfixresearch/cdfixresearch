@@ -98,6 +98,15 @@ def print_out(target_t):
 
 def demo_test(testing_dataset, encoder, decoder, dic):
     total = 0
+    print("Buggy Method:")
+    print("public int getPartition(PigNullableWritable wrappedKey, Writable value, int numPartitions) {")
+    print("    ......")
+    print("    indexes = reducerMap.get(keyTuple);")
+    print("    if (indexes == null) {")
+    print("        return (Math.abs(keyTuple.hashCode()) % totalReducers);    (BUGGY)")
+    print("    }")
+    print("    ......")
+    print("}")
     print("Buggy Statement: return (Math.abs(keyTuple.hashCode()) % totalReducers);")
     print("Fixed Version: return (Math.abs(keyTuple.hashCode() % totalReducers));")
     #print("Fixed Version (Dictionary Index): 19584 (67972.42140(8984.5279 27010 23926))")
@@ -113,7 +122,7 @@ def demo_test(testing_dataset, encoder, decoder, dic):
             print("CDFix output: return (Math.abs(keyTuple.hashCode() % totalReducers));")
         else:
             print("CDFix output: incorrect fix")
-    print("Predict Accuracy:", total / len(testing_dataset))
+    #print("Predict Accuracy:", total / len(testing_dataset))
 
 
 def asMinutes(s):
